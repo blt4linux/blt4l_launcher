@@ -11,7 +11,7 @@
 # Folder for the two binaries and for the base lua folder (eventually)
 BLT4L_LIB_PATH="/usr/lib/blt4l"
 DISTDIR_MODS="$BLT4L_LIB_PATH/mods"
-DISTDIR_MODS_BASE="$BLT4L_LIB_PATH/mods/base"
+DISTDIR_MODS_BASE="$DISTDIR_MODS/base"
 
 # Game directory, which Steam automatically launches us in
 GAMEDIR="$PWD"

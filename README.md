@@ -13,7 +13,7 @@ Basic current plan:
     * if true: skip to #4
     * if false: copy in base lua from stored copy
 * [x] Set LD_PRELOAD and exec the game
-* [ ] Detect if run without parameters (ex, just `$ blt4l`) and display an informative error
+* [x] Detect if run without parameters (ex, just `$ blt4l`) and display an informative error
 
 others:
 

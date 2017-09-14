@@ -15,6 +15,17 @@ GAMEDIR="$PWD"
 # Where we spit out debugging information
 LOGFILE="$GAMEDIR/blt4l_launcher.log"
 
+## Check if we're even being run by Steam
+if [ $# -eq 0 ]; then
+    echo -e "blt4l isn't meant to be run directly
+You should go into Steam->\e[4mPAYDAY 2\e[0m->Right click->\e[4mProperies\e[0m->\e[4mSet Launch Options...\e[0m and set:
+    \e[1mblt4l %command%\e[0m
+(feel free to pass any options to Payday 2 after %command%, like -skip_intro)
+Then run Payday 2 from Steam normally."
+    exit 1
+fi
+
+
 ## Utility Functions
 log() {
     local msg
@@ -39,6 +50,10 @@ else
     BLT4L_BINARY_PATH="$BLT4L_LIB_PATH/libblt_loader_steamrt.so"
 fi
 log "Planning to load BLT4L binary '$BLT4L_BINARY_PATH'"
+
+if ! [[ -e "$BLT4L_BINARY_PATH" ]]; then
+    log "WARNING: BLT4L binary doesn't appear to exist; BLT probably isn't going to work."
+fi
 
 
 ## Launch the game

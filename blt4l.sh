@@ -3,14 +3,19 @@
 ## Copyright (C) Zach Mertes 2017. GPL3
 ## Basic description of current implementation:
 ## 1. Check if we're in the Steam runtime and set the correct binary
-## 2. LD_PRELOAD
-## 3. Launch game
+## 2. Check if the mods folder exists, if it doesn't copy in the default mods folder.
+## 3. LD_PRELOAD
+## 4. Launch game
 
 # Folder for the two binaries and for the base lua folder (eventually)
 BLT4L_LIB_PATH="/usr/lib/blt4l"
+DISTDIR_MODS="$BLT4L_LIB_PATH/mods"
+#DISTDIR_MODS_BASE="$BLT4L_LIB_PATH/mods/base"
 
 # Game directory, which Steam automatically launches us in
 GAMEDIR="$PWD"
+GAMEDIR_MODS="$PWD/mods"
+#GAMEDIR_MODS_BASE="$GAMEDIR_MODS/base"
 
 # Where we spit out debugging information
 LOGFILE="$GAMEDIR/blt4l_launcher.log"
@@ -34,13 +39,22 @@ log() {
     echo "$msg" >&2
 }
 
+popup_err() {
+    if hash zenity 2>/dev/null; then
+        zenity --error --ellipsize --text="$*"
+    else
+        log "zenity not found, the error that would've popped up would've been:"
+        log "$*"
+    fi
+}
+
 is_number() {
     re='^[0-9]+$'
     [[ $1 =~ $re ]]
 }
 
 ## Detect if we're in the Steam runtime
-# and set the binary accordingly
+## and set the binary accordingly
 BLT4L_BINARY_PATH=""
 if is_number "$STEAM_RUNTIME"; then
     log "Steam runtime not detected"
@@ -53,8 +67,30 @@ log "Planning to load BLT4L binary '$BLT4L_BINARY_PATH'"
 
 if ! [[ -e "$BLT4L_BINARY_PATH" ]]; then
     log "WARNING: BLT4L binary doesn't appear to exist; BLT probably isn't going to work."
+    popup_err "The BLT4L binary doesn't appear to exist, so your game is probably going to load without BLT."
 fi
 
+## Detect if the mods folder exists
+if [[ -d "$GAMEDIR_MODS" ]]; then
+    log "Mods directory exists"
+else
+    ## Load the mods folder in from the distributed version
+    log "Mods directory not found, copying in distributed copy"
+    if ! [[ -e "$DISTDIR_MODS" ]]; then
+        # Mods directory doesn't exist and we don't have one to install, display err to user and exit
+        log "WARNING: distribution mods folder '$DISTDIR_MODS' not found."
+        popup_err "WARNING: no mods folder found and distribution mods folder '$DISTDIR_MODS' not found.
+You'll need to manually install the mods directory.
+See https://github.com/blt4linux/blt4l for more information.
+If you installed blt4l from a distributed package, please complain at whoever provided it to you.
+If you're trying to uninstall blt4l, clear PAYDAY 2's launch options in Steam."
+        exit 1
+    else
+        mkdir -p "$GAMEDIR_MODS"
+        cp -r -t "$GAMEDIR_MODS" "$DISTDIR_MODS/"*
+        log "Mods directory copied from '$DISTDIR_MODS'"
+    fi
+fi
 
 ## Launch the game
 

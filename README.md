@@ -6,7 +6,7 @@ Basic current plan:
 * [x] Detect if we're in the Steam runtime or not (is STEAM_RUNTIME not a number?)
     * if true: set binary to libblt_loader.so
     * if false: set binary to libblt_loader_steamrt.so
-* [ ] Detect if `mods` directory is present
+* [x] Detect if `mods` directory is present
     * if true: skip to #3
     * if false: copy in base folder structure from stored copy
 * [ ] Detect if `mods/base` directory is present

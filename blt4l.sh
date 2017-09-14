@@ -56,15 +56,25 @@ is_number() {
 
 ## Detect if we're in the Steam runtime
 ## and set the binary accordingly
-BLT4L_BINARY_PATH=""
+BLT4L_BINARY_NAME=""
 if is_number "$STEAM_RUNTIME"; then
     log "Steam runtime not detected"
-    BLT4L_BINARY_PATH="$BLT4L_LIB_PATH/libblt_loader.so"
+    BLT4L_BINARY_NAME="libblt_loader.so"
 else
     log "Steam runtime detected"
-    BLT4L_BINARY_PATH="$BLT4L_LIB_PATH/libblt_loader_steamrt.so"
+    BLT4L_BINARY_NAME="libblt_loader_steamrt.so"
 fi
-log "Planning to load BLT4L binary '$BLT4L_BINARY_PATH'"
+
+## If there's a libblt_loader in the game dir, load that
+## Otherwise, load the system binary
+BLT4L_BINARY_PATH=""
+if [[ -e "$GAMEDIR/$BLT4L_BINARY_NAME" ]]; then
+    log "Loading gamedir binary '$GAMEDIR/$BLT4L_BINARY_NAME'"
+    BLT4L_BINARY_PATH="$GAMEDIR/$BLT4L_BINARY_NAME"
+else
+    log "Loading system binary '$BLT4L_LIB_PATH/$BLT4L_BINARY_NAME'"
+    BLT4L_BINARY_PATH="$BLT4L_LIB_PATH/$BLT4L_BINARY_NAME"
+fi
 
 if ! [[ -e "$BLT4L_BINARY_PATH" ]]; then
     log "WARNING: BLT4L binary doesn't appear to exist; BLT probably isn't going to work."

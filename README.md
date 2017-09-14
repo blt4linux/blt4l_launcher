@@ -14,7 +14,7 @@ Basic current plan:
     * if false: copy in base lua from stored copy
 * [x] Set LD_PRELOAD and exec the game
 * [x] Detect if run without parameters (ex, just `$ blt4l`) and display an informative error
-* [ ] Support using blt4l binaries present in the game directory rather than the system ones
+* [x] Support using blt4l binaries present in the game directory rather than the system ones
 
 others:
 

@@ -9,7 +9,7 @@ Basic current plan:
 * [x] Detect if `mods` directory is present
     * if true: skip to #3
     * if false: copy in base folder structure from stored copy
-* [ ] Detect if `mods/base` directory is present
+* [x] Detect if `mods/base` directory is present
     * if true: skip to #4
     * if false: copy in base lua from stored copy
 * [x] Set LD_PRELOAD and exec the game

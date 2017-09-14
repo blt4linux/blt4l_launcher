@@ -3,19 +3,20 @@
 ## Copyright (C) Zach Mertes 2017. GPL3
 ## Basic description of current implementation:
 ## 1. Check if we're in the Steam runtime and set the correct binary
-## 2. Check if the mods folder exists, if it doesn't copy in the default mods folder.
-## 3. LD_PRELOAD
-## 4. Launch game
+## 2. Check if mods/ exists, if it doesn't copy in the default mods folder.
+## 3. Check if mods/base exists, if not copy in the default one.
+## 4. LD_PRELOAD
+## 5. Launch game
 
 # Folder for the two binaries and for the base lua folder (eventually)
 BLT4L_LIB_PATH="/usr/lib/blt4l"
 DISTDIR_MODS="$BLT4L_LIB_PATH/mods"
-#DISTDIR_MODS_BASE="$BLT4L_LIB_PATH/mods/base"
+DISTDIR_MODS_BASE="$BLT4L_LIB_PATH/mods/base"
 
 # Game directory, which Steam automatically launches us in
 GAMEDIR="$PWD"
 GAMEDIR_MODS="$PWD/mods"
-#GAMEDIR_MODS_BASE="$GAMEDIR_MODS/base"
+GAMEDIR_MODS_BASE="$GAMEDIR_MODS/base"
 
 # Where we spit out debugging information
 LOGFILE="$GAMEDIR/blt4l_launcher.log"
@@ -91,6 +92,29 @@ If you're trying to uninstall blt4l, clear PAYDAY 2's launch options in Steam."
         log "Mods directory copied from '$DISTDIR_MODS'"
     fi
 fi
+
+## Detect if the mods/base folder exists
+if [[ -d "$GAMEDIR_MODS_BASE" ]]; then
+    log "Base mod directory exists"
+else
+    ## Load the mods folder in from the distributed version
+    log "Base mod directory not found, copying in distributed copy"
+    if ! [[ -e "$DISTDIR_MODS_BASE" ]]; then
+        # Mods directory doesn't exist and we don't have one to install, display err to user and exit
+        log "WARNING: distribution mods folder '$DISTDIR_MODS_BASE' not found."
+        popup_err "WARNING: no mods/base folder found and distribution mods/base folder '$DISTDIR_MODS_BASE' not found.
+You'll need to manually install the mods directory.
+See https://github.com/blt4linux/blt4l for more information.
+If you installed blt4l from a distributed package, please complain at whoever provided it to you.
+If you're trying to uninstall blt4l, clear PAYDAY 2's launch options in Steam."
+        exit 1
+    else
+        mkdir -p "$GAMEDIR_MODS_BASE"
+        cp -r -t "$GAMEDIR_MODS_BASE" "$DISTDIR_MODS_BASE/"*
+        log "Mods directory copied from '$DISTDIR_MODS_BASE'"
+    fi
+fi
+
 
 ## Launch the game
 
